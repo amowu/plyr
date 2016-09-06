@@ -3118,7 +3118,7 @@
                 target.setAttribute('aria-hidden', !show);
             });
 
-            // Speed munu items
+            // Speed menu items
             _on(plyr.controls.querySelectorAll('[data-plyr="option-speed"]'), 'click', function(event) {
                 var button = event.target;
                 var speed = parseFloat(button.innerHTML);
