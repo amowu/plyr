@@ -9,10 +9,10 @@
 // General functions
 ;(function() {
     //document.body.addEventListener('ready', function(event) { console.log(event); });
-    
+
     // Setup the player
     var instances = plyr.setup({
-        debug:              true,
+        debug:              false,
         title:              'Video demo',
         iconUrl:            '../dist/plyr.svg',
         tooltips: {
@@ -20,12 +20,15 @@
         },
         captions: {
             defaultActive:  true
-        }
+        },
+        controls:           ['play-large', 'play', 'progress', 'current-time', 'mute', 'volume', 'captions', 'quality', 'fullscreen']
     });
     plyr.loadSprite('dist/demo.svg');
 
     // Plyr returns an array regardless
     var player = instances[0];
+
+    window.player = player;
 
     // Setup type toggle
     var buttons = document.querySelectorAll('[data-source]'),
@@ -50,6 +53,14 @@
             }
         });
     }
+
+    player.on('canplay', function(event) {
+        console.log('canplay for main');
+    });
+
+    player.on('play', function(event) {
+        console.log('play for main');
+    });
 
     // List for backwards/forwards
     window.addEventListener('popstate', function(event) {
