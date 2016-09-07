@@ -28,6 +28,43 @@
     // Plyr returns an array regardless
     var player = instances[0];
 
+    // player.on('setup', function(event) {
+        // var instance = event.detail.plyr;
+
+        player.source({
+            type:       'video',
+            title:      'Example title',
+            sources: [{
+              src:    'http://player.vimeo.com/external/144711856.hd.mp4?s=7d85bdceeeec211dbd8687cdf592c147b52039dc&profile_id=119&oauth2_token_id=56507941',
+              type:   'video/mp4',
+              label:  '1080p'
+            },
+            {
+              src:    'http://player.vimeo.com/external/144711856.hd.mp4?s=7d85bdceeeec211dbd8687cdf592c147b52039dc&profile_id=113&oauth2_token_id=56507941',
+              type:   'video/mp4',
+              label:  '720p'
+            },
+            {
+              src:    'http://player.vimeo.com/external/144711856.sd.mp4?s=9d6197928f4cc7a14114f5b3364e05a59bf71e89&profile_id=112&oauth2_token_id=56507941',
+              type:   'video/mp4',
+              label:  '540p'
+            },
+            {
+              src:    'http://player.vimeo.com/external/144711856.mobile.mp4?s=4b5236e61a62667dc03dd81b1bf015c451c15758&profile_id=116&oauth2_token_id=56507941',
+              type:   'video/mp4',
+              label:  '270p'
+            }],
+            poster:     'https://i.vimeocdn.com/video/542616471_640x360.jpg?r=pad',
+            tracks:     [{
+              kind:   'subtitles',
+              label:  'Chinese (Traditional Han)',
+              srclang:'zh-Hant',
+              src:    'http://f.vimeocdn.com/tt/4208523?token=Zp0kuY+3oxFIAvYtvE+LRqETLSnv1DZeEqEnPay6IDM=',
+              default: true
+            }]
+        });
+    // });
+
     window.player = player;
 
     // Setup type toggle
