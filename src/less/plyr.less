@@ -12,13 +12,13 @@
     to { background-position: @plyr-progress-loading-size 0; }
 }
 @keyframes plyr-popup {
-    from { 
-        transform: translateY(10px); 
-        opacity: .5; 
+    from {
+        transform: translateY(10px);
+        opacity: .5;
     }
-    to { 
-        transform: translateY(0); 
-        opacity: 1; 
+    to {
+        transform: translateY(0);
+        opacity: 1;
     }
 }
 
@@ -284,6 +284,7 @@
     > button,
     .plyr__progress,
     .plyr__time,
+    .plyr__speed,
     .plyr__menu {
         margin-left: (@plyr-control-spacing / 2);
 
@@ -293,6 +294,10 @@
     }
     .plyr__volume {
         margin-left: (@plyr-control-spacing / 2);
+    }
+    .plyr__speed {
+        border-radius: 2px;
+        border: solid 1px #ffffff;
     }
     [data-plyr="pause"] {
         margin-left: 0;
@@ -337,6 +342,7 @@
         > button,
         .plyr__progress,
         .plyr__time,
+        .plyr__speed,
         .plyr__menu {
             margin-left: @plyr-control-spacing;
         }
@@ -499,28 +505,26 @@
         button {
             display: flex;
             width: 100%;
-            padding: 10px 30px 10px 12px;
+            padding: 10px 12px 10px 30px;
             color: @plyr-menu-color;
             font-weight: 600;
-
-            // Arrow
-            &::after {
-                content: "";
-                position: absolute;
-                top: 50%;
-                transform: translateY(-50%);
-                right: 5px;
-                border: 5px solid transparent;
-                border-left-color: fade(@plyr-menu-color, 80%);
-            }
         }
 
         // Option value
         .plyr__menu__value {
             margin-left: auto;
-            padding-left: 25px;
             font-weight: 400;
             color: fade(@plyr-menu-color, 80%);
+
+            &-active::before {
+                content: "";
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                left: 5px;
+                border: 5px solid fade(@plyr-menu-color, 80%);
+                border-radius: 5px;
+            }
         }
 
         // Arrow
@@ -800,6 +804,14 @@
     @media (min-width: @plyr-bp-screen-md) {
         max-width: 100px;
     }
+}
+
+// Speed
+// --------------------------------------------------------------
+.plyr__speed {
+    display: inline-block;
+    vertical-align: middle;
+    font-size: @plyr-font-size-small;
 }
 
 // Hide sound controls on iOS

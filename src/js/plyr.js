@@ -78,6 +78,7 @@
                 forward:        '[data-plyr="fast-forward"]',
                 mute:           '[data-plyr="mute"]',
                 captions:       '[data-plyr="captions"]',
+                speed:          '[data-plyr="speed"]',
                 fullscreen:     '[data-plyr="fullscreen"]',
                 settings:       '[data-plyr="settings"]'
             },
@@ -865,6 +866,36 @@
                 );
             }
 
+            // Speed button
+            if (_inArray(config.controls, 'speed')) {
+                html.push(
+                    '<div class="plyr__menu">',
+                        '<button type="button" id="plyr-speeds-toggle-{id}" data-plyr="speeds" aria-haspopup="true" aria-controls="plyr-speeds-{id}" aria-expanded="false">',
+                            '<span class="plyr__sr-only">' + config.i18n.speed + '</span>',
+                            '<span data-plyr="speed">{speed}x</span>',
+                        '</button>',
+                        '<div class="plyr__menu__container" id="plyr-speeds-{id}" aria-hidden="true" aria-labelled-by="plyr-speeds-toggle-{id}">',
+                            '<ul>'
+                );
+
+                config.speeds.forEach(function(element) {
+                    html.push(
+                                '<li>',
+                                    '<button type="button" data-plyr="option-speed" class=' +
+                                        ((element === config.currentSpeed) ?
+                                            '"plyr__menu__value-active"' : '"plyr__menu__value"') +
+                                    '>' + element + '</button>',
+                                '</li>'
+                    );
+                });
+
+                html.push(
+                          '</ul>',
+                      '</div>',
+                  '</div>'
+                );
+            }
+
             // Settings button
             if (_inArray(config.controls, 'settings')) {
 
@@ -1208,6 +1239,16 @@
             }
         }
 
+        // Setup playback speed
+        function _setupSpeed(speed) {
+            // Load speed from storage or default value
+            if (_is.undefined(speed)) {
+                speed = plyr.storage.speed || config.defaultSpeed;
+            }
+
+            _speed(speed);
+        }
+
         // Find all elements
         function _getElements(selector) {
             return plyr.container.querySelectorAll(selector);
@@ -1293,8 +1334,8 @@
             // Replace seek time instances
             html = _replaceAll(html, '{seektime}', config.seekTime);
 
-            // Replace seek time instances
-            html = _replaceAll(html, '{speed}', config.currentSpeed === 1 ? 'Normal' : config.currentSpeed.toFixed(1) + 'x');
+            // Replace speed instances
+            html = _replaceAll(html, '{speed}', config.currentSpeed);
 
             // Replace current captions language
             html = _replaceAll(html, '{lang}', 'English');
@@ -1344,6 +1385,7 @@
                 plyr.buttons.restart          = _getElement(config.selectors.buttons.restart);
                 plyr.buttons.rewind           = _getElement(config.selectors.buttons.rewind);
                 plyr.buttons.forward          = _getElement(config.selectors.buttons.forward);
+                plyr.buttons.speed            = _getElement(config.selectors.buttons.speed);
                 plyr.buttons.fullscreen       = _getElement(config.selectors.buttons.fullscreen);
                 plyr.buttons.settings         = _getElement(config.selectors.buttons.settings);
 
@@ -1993,17 +2035,7 @@
                 return;
             }
             if (!_is.number(speed)) {
-                var index = config.speeds.indexOf(config.currentSpeed);
-
-                if (index !== -1) {
-                    var nextIndex = index + 1;
-                    if (nextIndex >= config.speeds.length) {
-                        nextIndex = 0;
-                    }
-                    speed = config.speeds[nextIndex];
-                } else {
-                    speed = config.defaultSpeed;
-                }
+                speed = config.defaultSpeed;
             }
 
             // Store current speed
@@ -2583,14 +2615,8 @@
             }
         }
 
-        // Set playback speed
-        function _setSpeed(speed) {
-            // Load speed from storage or default value
-            if (_is.undefined(speed)) {
-                speed = plyr.storage.speed || config.defaultSpeed;
-            }
+        function _updateSpeedDisplay() {
 
-            _speed(speed);
         }
 
         // Show the player controls in fullscreen mode
@@ -3092,6 +3118,25 @@
                 target.setAttribute('aria-hidden', !show);
             });
 
+            // Speed munu items
+            _on(plyr.controls.querySelectorAll('[data-plyr="option-speed"]'), 'click', function(event) {
+                var button = event.target;
+                var speed = parseFloat(button.innerHTML);
+                var currentActivedButtons = plyr.controls.querySelectorAll('.plyr__menu__value-active');
+                var menuButton = plyr.controls.querySelector('[data-plyr="speed"]');
+
+                _speed(speed);
+
+                currentActivedButtons.forEach(function(element) {
+                    _toggleClass(element, 'plyr__menu__value-active', false);
+                    _toggleClass(element, 'plyr__menu__value', true);
+                });
+
+                _toggleClass(button, 'plyr__menu__value-active', true);
+
+                menuButton.innerHTML = config.currentSpeed + 'x';
+            });
+
             // Seek tooltip
             _on(plyr.progress.container, 'mouseenter mouseleave mousemove', _updateSeekTooltip);
 
@@ -3386,6 +3431,9 @@
             // Setup media
             _setupMedia();
 
+            // Set playback speed
+            _setupSpeed();
+
             // Setup interface
             // If embed but not fully supported, setupInterface (to avoid flash of controls) and call ready now
             if (_inArray(config.types.html5, plyr.type) || (_inArray(config.types.embed, plyr.type) && !plyr.supported.full)) {
@@ -3455,9 +3503,6 @@
             _setVolume();
             _updateVolume();
 
-            // Set playback speed
-            _setSpeed();
-
             // Reset time display
             _timeUpdate();
 
@@ -3488,7 +3533,6 @@
             source:             _source,
             poster:             _updatePoster,
             setVolume:          _setVolume,
-            setSpeed:           _setSpeed,
             togglePlay:         _togglePlay,
             toggleMute:         _toggleMute,
             toggleCaptions:     _toggleCaptions,
