@@ -42,6 +42,8 @@
         defaultSpeed:           1.0,
         currentSpeed:           1.0,
         speeds:                 [ 0.5, 1.0, 1.5, 2.0 ],
+        currentQuality:         null,
+        qualities:              [],
         duration:               null,
         displayDuration:        true,
         loadSprite:             true,
@@ -79,8 +81,9 @@
                 mute:           '[data-plyr="mute"]',
                 captions:       '[data-plyr="captions"]',
                 speed:          '[data-plyr="speed"]',
-                fullscreen:     '[data-plyr="fullscreen"]',
-                settings:       '[data-plyr="settings"]'
+                quality:        '[data-plyr="quality"]',
+                settings:       '[data-plyr="settings"]',
+                fullscreen:     '[data-plyr="fullscreen"]'
             },
             volume: {
                 input:          '[data-plyr="volume"]',
@@ -181,11 +184,12 @@
             mute:               null,
             volume:             null,
             captions:           null,
-            fullscreen:         null,
-            speed:              null
+            speed:              null,
+            quality:            null,
+            fullscreen:         null
         },
         // Events to watch on HTML5 media elements
-        events:                 ['ready', 'ended', 'progress', 'stalled', 'playing', 'waiting', 'canplay', 'canplaythrough', 'loadstart', 'loadeddata', 'loadedmetadata', 'timeupdate', 'volumechange', 'play', 'pause', 'error', 'seeking', 'emptied'],
+        events:                 ['ready', 'ended', 'progress', 'stalled', 'playing', 'waiting', 'canplay', 'canplaythrough', 'loadstart', 'loadeddata', 'loadedmetadata', 'timeupdate', 'volumechange', 'play', 'pause', 'error', 'seeking', 'emptied', 'qualitychanged'],
         // Logging
         logPrefix:              '[Plyr]'
     };
@@ -896,6 +900,36 @@
                 );
             }
 
+            // Quality button
+            if (_inArray(config.controls, 'quality')) {
+                html.push(
+                    '<div class="plyr__menu">',
+                        '<button type="button" id="plyr-qualities-toggle-{id}" data-plyr="qualities" aria-haspopup="true" aria-controls="plyr-qualities-{id}" aria-expanded="false">',
+                            '<span class="plyr__sr-only">' + config.i18n.quality + '</span>',
+                            '<span data-plyr="quality">{quality}</span>',
+                        '</button>',
+                        '<div class="plyr__menu__container" id="plyr-qualities-{id}" aria-hidden="true" aria-labelled-by="plyr-qualities-toggle-{id}">',
+                            '<ul>'
+                );
+
+                config.qualities.forEach(function(element) {
+                    html.push(
+                                '<li>',
+                                    '<button type="button" data-plyr="option-quality" class=' +
+                                        ((element === config.currentQuality) ?
+                                            '"plyr__menu__value-active"' : '"plyr__menu__value"') +
+                                    '>' + element + '</button>',
+                                '</li>'
+                    );
+                });
+
+                html.push(
+                          '</ul>',
+                      '</div>',
+                  '</div>'
+                );
+            }
+
             // Settings button
             if (_inArray(config.controls, 'settings')) {
 
@@ -1249,6 +1283,32 @@
             _speed(speed);
         }
 
+        // Setup config.qualities and config.currentQuality
+        function _setupQuality() {
+            // Find all <source>
+            var sources = plyr.media.querySelectorAll('source');
+
+            if (sources.length === 0) {
+                _warn('Can not found any <source>');
+                return;
+            }
+
+            // Covert HTMLNodeList to Array
+            var ary = Array.prototype.slice.call(sources);
+
+            // example: ['1080p', '720p', '360p', ...]
+            config.qualities = ary.map(function(element) {
+                return element.getAttribute('label');
+            });
+
+            if (config.qualities.length === 0) {
+                _log('<source> had not any label attribute');
+                return;
+            }
+
+            config.currentQuality = config.qualities[0];
+        }
+
         // Find all elements
         function _getElements(selector) {
             return plyr.container.querySelectorAll(selector);
@@ -1334,11 +1394,14 @@
             // Replace seek time instances
             html = _replaceAll(html, '{seektime}', config.seekTime);
 
+            // Replace current captions language
+            html = _replaceAll(html, '{lang}', 'English');
+
             // Replace speed instances
             html = _replaceAll(html, '{speed}', config.currentSpeed);
 
-            // Replace current captions language
-            html = _replaceAll(html, '{lang}', 'English');
+            // Replace quality instances
+            html = _replaceAll(html, '{quality}', config.currentQuality);
 
             // Replace all id references with random numbers
             html = _replaceAll(html, '{id}', Math.floor(Math.random() * (10000)));
@@ -1386,8 +1449,9 @@
                 plyr.buttons.rewind           = _getElement(config.selectors.buttons.rewind);
                 plyr.buttons.forward          = _getElement(config.selectors.buttons.forward);
                 plyr.buttons.speed            = _getElement(config.selectors.buttons.speed);
-                plyr.buttons.fullscreen       = _getElement(config.selectors.buttons.fullscreen);
+                plyr.buttons.quality          = _getElement(config.selectors.buttons.quality);
                 plyr.buttons.settings         = _getElement(config.selectors.buttons.settings);
+                plyr.buttons.fullscreen       = _getElement(config.selectors.buttons.fullscreen);
 
                 // Inputs
                 plyr.buttons.mute             = _getElement(config.selectors.buttons.mute);
@@ -2048,6 +2112,131 @@
             _updateStorage({speed: speed});
         }
 
+        // Switch current video quality:
+        // 1. remember current playback time
+        // 2. pause current playback
+        // 3. get next quality
+        // 4. find next quality video source
+        // 5. move source to first
+        // 6. update source
+        // 7. play playback from lastest time
+        function _quality(quality) {
+            var isPlaying = !plyr.media.paused;
+            // 1. remember current playback time
+            var currentTime = plyr.media.currentTime;
+            var currentQuality = config.currentQuality;
+
+            // source has not any quality label
+            if (config.qualities.length === 0) {
+                return;
+            }
+
+            // 2. pause current playback
+            if (isPlaying) {
+                _pause();
+            }
+
+            // 3. get next quality if `quality` not given
+            if (!_is.string(quality)) {
+                var index = config.qualities.indexOf(currentQuality);
+                if (index > -1) {
+                    index += 1;
+                    if (index >= config.qualities.length) {
+                        index = 0;
+                    }
+                    quality = config.qualities[index];
+                } else {
+                    quality = config.qualities[0];
+                }
+            } else {
+                if (quality === currentQuality) {
+                    // Don't need switch
+                    return;
+                }
+            }
+            config.currentQuality = quality;
+
+            // 4. find next quality video source
+
+            // Get current video sources
+            var sources = plyr.media.querySelectorAll('source');
+            var tracks = plyr.media.querySelectorAll('track');
+
+            if (!sources.length) {
+                _warn('Can not found any source');
+                return;
+            }
+            // Convert NodeList to Array
+            if (_is.nodeList(sources)) {
+                sources = Array.prototype.slice.call(sources);
+            }
+            if (_is.nodeList(tracks)) {
+                tracks = Array.prototype.slice.call(tracks);
+            }
+            // Find source by label
+            var index = -1;
+            for (var i=0; i<sources.length; i++) {
+                index ++;
+                var label = sources[i].getAttribute('label');
+                if (label === quality) {
+                    break;
+                }
+            }
+
+            if (index === 0) {
+                // Don't need to move source to first
+                return;
+            }
+
+            // 5. move source to first
+            if (index > -1) {
+                var matchItem = sources.splice(index, 1);
+                sources.unshift(matchItem[0])
+            } else {
+                _warn('Can not found ' + quality + ' label');
+                return;
+            }
+
+            // 6. update source
+            _updateSource({
+                type: 'video',
+                title: plyr.media.title,
+                poster: plyr.media.poster,
+                tracks: tracks.map(function(track) {
+                    return {
+                        kind: track.kind,
+                        label: track.label,
+                        srclang: track.srclang,
+                        src: track.src,
+                        default: track.default
+                    };
+                }),
+                sources: sources.map(function(source) {
+                    return {
+                        src: source.src,
+                        type: source.type
+                    };
+                })
+            });
+
+            var onCanplay = function(event) {
+                _seek(currentTime);
+
+                if (isPlaying) {
+                    _play();
+                }
+
+                // trigger quality changed event
+                _triggerEvent(plyr.media, 'qualitychanged');
+
+                // Remove event
+                _toggleListener(plyr.media, 'canplay', onCanplay, false);
+            }
+
+            // 7. play playback from lastest time
+            _on(plyr.media, 'canplay', onCanplay);
+        }
+
         // Seek to time
         // The input parameter can be an event or a number
         function _seek(input) {
@@ -2615,10 +2804,6 @@
             }
         }
 
-        function _updateSpeedDisplay() {
-
-        }
-
         // Show the player controls in fullscreen mode
         function _toggleControls(toggle) {
             // Don't hide if config says not to, it's audio, or not ready or loading
@@ -3081,9 +3266,6 @@
             // Fast forward
             _proxyListener(plyr.buttons.forward, 'click', config.listeners.forward, _forward);
 
-            // Speed-up
-            _proxyListener(plyr.buttons.speed, 'click', config.listeners.speed, _speed);
-
             // Seek
             _proxyListener(plyr.buttons.seek, inputEvent, config.listeners.seek, _seek);
 
@@ -3133,6 +3315,25 @@
                 _toggleClass(button, 'plyr__menu__value-active', true);
 
                 menuButton.innerHTML = config.currentSpeed + 'x';
+            });
+
+            // Quality menu items
+            _on(plyr.controls.querySelectorAll('[data-plyr="option-quality"]'), 'click', function(event) {
+                var button = event.target;
+                var quality = button.innerHTML;
+                var currentActivedButtons = plyr.controls.querySelectorAll('.plyr__menu__value-active');
+                var menuButton = plyr.controls.querySelector('[data-plyr="quality"]');
+
+                _quality(quality);
+
+                currentActivedButtons.forEach(function(element) {
+                    _toggleClass(element, 'plyr__menu__value-active', false);
+                    _toggleClass(element, 'plyr__menu__value', true);
+                });
+
+                _toggleClass(button, 'plyr__menu__value-active', true);
+
+                menuButton.innerHTML = config.currentQuality;
             });
 
             // Seek tooltip
@@ -3431,6 +3632,9 @@
 
             // Set playback speed
             _setupSpeed();
+
+            // Set playback quality
+            _setupQuality();
 
             // Setup interface
             // If embed but not fully supported, setupInterface (to avoid flash of controls) and call ready now
@@ -3749,7 +3953,7 @@
 
             // Listen for events if debugging
             if (config.debug) {
-                var events = config.events.concat(['setup', 'statechange', 'enterfullscreen', 'exitfullscreen', 'captionsenabled', 'captionsdisabled']);
+                var events = config.events.concat(['setup', 'statechange', 'enterfullscreen', 'exitfullscreen', 'captionsenabled', 'captionsdisabled', 'qualitychanged']);
 
                 _on(instance.getContainer(), events.join(' '), function(event) {
                     console.log([config.logPrefix, 'event:', event.type].join(' '), event.detail.plyr);
