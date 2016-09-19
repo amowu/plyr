@@ -849,22 +849,20 @@
             // Toggle mute button
             if (_inArray(config.controls, 'mute')) {
                 html.push(
-                    '<button type="button" data-plyr="mute">',
-                        '<svg class="icon--muted"><use xlink:href="' + iconPath + '-muted" /></svg>',
-                        '<svg><use xlink:href="' + iconPath + '-volume" /></svg>',
-                        '<span class="plyr__sr-only">' + config.i18n.toggleMute + '</span>',
-                    '</button>'
-                );
-            }
-
-            // Volume range control
-            if (_inArray(config.controls, 'volume')) {
-                html.push(
-                    '<span class="plyr__volume">',
-                        '<label for="volume-{id}" class="plyr__sr-only">' + config.i18n.volume + '</label>',
-                        '<input id="volume-{id}" class="plyr__volume--input" type="range" min="' + config.volumeMin + '" max="' + config.volumeMax + '" value="' + config.volume + '" data-plyr="volume">',
-                        '<progress class="plyr__volume--display" max="' + config.volumeMax + '" value="' + config.volumeMin + '" role="presentation"></progress>',
-                    '</span>'
+                    '<div class="plyr__menu">',
+                        '<button type="button" id="plyr-volume-toggle-{id}" data-plyr="mute" aria-haspopup="true" aria-controls="plyr-volume-{id}" aria-expanded="false">',
+                            '<svg class="icon--muted"><use xlink:href="' + iconPath + '-muted" /></svg>',
+                            '<svg><use xlink:href="' + iconPath + '-volume" /></svg>',
+                            '<span class="plyr__sr-only">' + config.i18n.volume + '</span>',
+                        '</button>',
+                        '<div class="plyr__menu__container" id="plyr-volume-{id}" aria-hidden="true" aria-labelled-by="plyr-volume-toggle-{id}">',
+                            '<span class="plyr__volume">',
+                                '<label for="volume-{id}" class="plyr__sr-only">' + config.i18n.volume + '</label>',
+                                '<input id="volume-{id}" class="plyr__volume--input" type="range" min="' + config.volumeMin + '" max="' + config.volumeMax + '" value="' + config.volume + '" data-plyr="volume">',
+                                '<progress class="plyr__volume--display" max="' + config.volumeMax + '" value="' + config.volumeMin + '" role="presentation"></progress>',
+                            '</span>',
+                        '</div>',
+                    '</div>'
                 );
             }
 
