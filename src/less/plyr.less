@@ -276,31 +276,61 @@
 // Playback controls
 .plyr__controls {
     display: flex;
-    align-items: center;
-    line-height: 1;
-    text-align: center;
+    flex-direction: column;
 
-    // Spacing
-    > button,
-    .plyr__progress,
-    .plyr__time,
-    .plyr__speed,
-    .plyr__menu {
-        margin-left: (@plyr-control-spacing / 2);
+    // Layout
+    .plyr__progress-container {
+        display: flex;
+    }
+    .plyr__controls-container {
+        display: flex;
+        justify-content: space-between;
 
-        &:first-child {
-            margin-left: 0;
+        .plyr__controls-left-container, .plyr__controls-right-container {
+            display: flex;
+            align-items: center;
+            line-height: 1;
+            text-align: center;
+
+            // Spacing
+            > button,
+            .plyr__progress,
+            .plyr__time,
+            .plyr__speed,
+            .plyr__menu {
+                margin-left: (@plyr-control-spacing / 2);
+
+                &:first-child {
+                    margin-left: 0;
+                }
+            }
+            .plyr__volume {
+                margin-left: (@plyr-control-spacing / 2);
+            }
+            .plyr__speed {
+                border-radius: 2px;
+                border: solid 1px #ffffff;
+            }
+            [data-plyr="pause"] {
+                margin-left: 0;
+            }
+
+            @media (min-width: @plyr-bp-screen-sm) {
+                > button,
+                .plyr__progress,
+                .plyr__time,
+                .plyr__speed,
+                .plyr__menu {
+                    margin-left: @plyr-control-spacing;
+                }
+
+                > button + button,
+                .plyr__menu + button,
+                > button + .plyr__menu {
+                    margin-left: (@plyr-control-spacing / 2);
+                }
+            }
         }
-    }
-    .plyr__volume {
-        margin-left: (@plyr-control-spacing / 2);
-    }
-    .plyr__speed {
-        border-radius: 2px;
-        border: solid 1px #ffffff;
-    }
-    [data-plyr="pause"] {
-        margin-left: 0;
     }
 
     // Buttons
@@ -336,22 +366,6 @@
     .icon--muted,
     .icon--captions-on {
         display: none;
-    }
-
-    @media (min-width: @plyr-bp-screen-sm) {
-        > button,
-        .plyr__progress,
-        .plyr__time,
-        .plyr__speed,
-        .plyr__menu {
-            margin-left: @plyr-control-spacing;
-        }
-
-        > button + button,
-        .plyr__menu + button,
-        > button + .plyr__menu {
-            margin-left: (@plyr-control-spacing / 2);
-        }
     }
 }
 // Hide controls
