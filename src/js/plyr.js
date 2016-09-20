@@ -125,7 +125,9 @@
             tabFocus:           'tab-focus'
         },
         captions: {
-            defaultActive:      false
+            defaultActive:      false,
+            currentTrack:       '',
+            tracks:             []
         },
         fullscreen: {
             enabled:            true,
@@ -155,7 +157,8 @@
             captions:           'Captions',
             settings:           'Settings',
             speed:              'Speed',
-            quality:            'Quality'
+            quality:            'Quality',
+            close:              'Close'
         },
         types: {
             embed:              ['youtube', 'vimeo', 'soundcloud'],
@@ -869,11 +872,37 @@
             // Toggle captions button
             if (_inArray(config.controls, 'captions')) {
                 html.push(
-                    '<button type="button" data-plyr="captions">',
-                        '<svg class="icon--captions-on"><use xlink:href="' + iconPath + '-captions-on" /></svg>',
-                        '<svg><use xlink:href="' + iconPath+ '-captions-off" /></svg>',
-                        '<span class="plyr__sr-only">' + config.i18n.toggleCaptions + '</span>',
-                    '</button>'
+                    '<div class="plyr__menu">',
+                        '<button type="button" id="plyr-captions-toggle-{id}" data-plyr="captions" aria-haspopup="true" aria-controls="plyr-captions-{id}" aria-expanded="false">',
+                            '<svg class="icon--captions-on"><use xlink:href="' + iconPath + '-captions-on" /></svg>',
+                            '<svg><use xlink:href="' + iconPath+ '-captions-off" /></svg>',
+                            '<span class="plyr__sr-only">' + config.i18n.toggleCaptions + '</span>',
+                        '</button>',
+                        '<div class="plyr__menu__container" id="plyr-captions-{id}" aria-hidden="true" aria-labelled-by="plyr-captions-toggle-{id}">',
+                            '<ul>'
+                );
+
+                config.captions.tracks.forEach(function(track) {
+                    html.push(
+                                '<li>',
+                                    '<button type="button" data-plyr="option-track" class=' +
+                                        ((track === config.captions.currentTrack) ?
+                                            '"plyr__menu__value-active"' : '"plyr__menu__value"') +
+                                        '>' + track + '</button>',
+                                '</li>'
+                    );
+                });
+
+                html.push(
+                                '<li>',
+                                    '<button type="button" data-plyr="option-close" class=' +
+                                        ((config.captions.currentTrack) ?
+                                            '"plyr__menu__value"' : '"plyr__menu__value-active"') +
+                                    '>' + config.i18n.close +'</button>',
+                                '</li>',
+                            '</ul>',
+                        '</div>',
+                    '</div>'
                 );
             }
 
@@ -1278,6 +1307,27 @@
                 _toggleClass(plyr.container, config.classes.captions.active, true);
                 _toggleState(plyr.buttons.captions, true);
             }
+        }
+
+        // Setup track text options for menu button
+        function _setupTrack() {
+            var tracks = plyr.media.querySelectorAll('track');
+
+            if (tracks.length === 0) {
+                _warn('Can not found any <track>');
+                return;
+            }
+
+            if (_is.nodeList(tracks)) {
+                tracks = Array.prototype.slice.call(tracks);
+            }
+
+            config.captions.tracks = tracks.map(function(track) {
+                if (track.default) {
+                    config.captions.currentTrack = track.label;
+                }
+                return track.label;
+            });
         }
 
         // Setup playback speed
@@ -3305,6 +3355,46 @@
                 target.setAttribute('aria-hidden', !show);
             });
 
+            // Track menu button
+            _on(plyr.controls.querySelectorAll('[data-plyr="option-track"]'), 'click', function(event) {
+                var button = event.target;
+                var track = button.innerHTML;
+                var currentActivedButtons = plyr.controls.querySelectorAll('.plyr__menu__value-active[data-plyr="option-track"]');
+                var closeButtons = plyr.controls.querySelectorAll('[data-plyr="option-close"]');
+                var menuButton = plyr.controls.querySelector('[data-plyr="track"]');
+
+                _toggleCaptions(true);
+
+                currentActivedButtons.forEach(function(element) {
+                    _toggleClass(element, 'plyr__menu__value-active', false);
+                    _toggleClass(element, 'plyr__menu__value', true);
+                });
+
+                closeButtons.forEach(function(element) {
+                    _toggleClass(element, 'plyr__menu__value-active', false);
+                    _toggleClass(element, 'plyr__menu__value', true);
+                });
+
+                _toggleClass(button, 'plyr__menu__value-active', true);
+            });
+
+            // Track menu button (close)
+            _on(plyr.controls.querySelectorAll('[data-plyr="option-close"]'), 'click', function(event) {
+                var button = event.target;
+                var track = button.innerHTML;
+                var currentActivedButtons = plyr.controls.querySelectorAll('.plyr__menu__value-active[data-plyr="option-track"]');
+                var menuButton = plyr.controls.querySelector('[data-plyr="track"]');
+
+                _toggleCaptions(false);
+
+                currentActivedButtons.forEach(function(element) {
+                    _toggleClass(element, 'plyr__menu__value-active', false);
+                    _toggleClass(element, 'plyr__menu__value', true);
+                });
+
+                _toggleClass(button, 'plyr__menu__value-active', true);
+            });
+
             // Speed menu items
             _on(plyr.controls.querySelectorAll('[data-plyr="option-speed"]'), 'click', function(event) {
                 var button = event.target;
@@ -3636,6 +3726,9 @@
 
             // Setup media
             _setupMedia();
+
+            // Set track option for menu
+            _setupTrack();
 
             // Set playback speed
             _setupSpeed();
