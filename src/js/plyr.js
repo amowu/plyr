@@ -3309,7 +3309,7 @@
             _on(plyr.controls.querySelectorAll('[data-plyr="option-speed"]'), 'click', function(event) {
                 var button = event.target;
                 var speed = parseFloat(button.innerHTML);
-                var currentActivedButtons = plyr.controls.querySelectorAll('.plyr__menu__value-active');
+                var currentActivedButtons = plyr.controls.querySelectorAll('.plyr__menu__value-active[data-plyr="option-speed"]');
                 var menuButton = plyr.controls.querySelector('[data-plyr="speed"]');
 
                 _speed(speed);
@@ -3328,7 +3328,7 @@
             _on(plyr.controls.querySelectorAll('[data-plyr="option-quality"]'), 'click', function(event) {
                 var button = event.target;
                 var quality = button.innerHTML;
-                var currentActivedButtons = plyr.controls.querySelectorAll('.plyr__menu__value-active');
+                var currentActivedButtons = plyr.controls.querySelectorAll('.plyr__menu__value-active[data-plyr="option-quality"]');
                 var menuButton = plyr.controls.querySelector('[data-plyr="quality"]');
 
                 _quality(quality);
