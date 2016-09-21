@@ -401,7 +401,10 @@
     right: 0;
     bottom: 0;
     padding: (@plyr-control-spacing * 5) @plyr-control-spacing @plyr-control-spacing;
-    background: linear-gradient(fade(@plyr-video-controls-bg, 0%), fade(@plyr-video-controls-bg, 70%));
+    background-image: linear-gradient(to bottom, fade(@plyr-video-controls-bg, 0%), fade(@plyr-video-controls-bg, 100%));
+    background-size: 100% @plyr-video-control-bg-size;
+    background-repeat: repeat-x;
+    background-position: bottom;
     border-bottom-left-radius: inherit;
     border-bottom-right-radius: inherit;
     color: @plyr-video-control-color;
