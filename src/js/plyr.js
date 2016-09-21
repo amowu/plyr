@@ -878,6 +878,7 @@
                             '<svg><use xlink:href="' + iconPath+ '-captions-off" /></svg>',
                         '</button>',
                         '<div class="plyr__menu__container" id="plyr-captions-{id}" aria-hidden="true" aria-labelled-by="plyr-captions-toggle-{id}">',
+                            '<div class="plyr__menu__title">' + config.i18n.captions + '</div>',
                             '<ul>'
                 );
 
@@ -913,6 +914,7 @@
                             '<span data-plyr="speed">{speed}x</span>',
                         '</button>',
                         '<div class="plyr__menu__container" id="plyr-speeds-{id}" aria-hidden="true" aria-labelled-by="plyr-speeds-toggle-{id}">',
+                            '<div class="plyr__menu__title">' + config.i18n.speed + '</div>',
                             '<ul>'
                 );
 
@@ -942,6 +944,7 @@
                             '<span data-plyr="quality">{quality}</span>',
                         '</button>',
                         '<div class="plyr__menu__container" id="plyr-qualities-{id}" aria-hidden="true" aria-labelled-by="plyr-qualities-toggle-{id}">',
+                            '<div class="plyr__menu__title">' + config.i18n.quality + '</div>',
                             '<ul>'
                 );
 
