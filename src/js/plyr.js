@@ -3387,9 +3387,6 @@
                 _on(document, fullscreen.fullScreenEventName, _toggleFullscreen);
             }
 
-            // Captions
-            _on(plyr.buttons.captions, 'click', _toggleCaptions);
-
             // Menu
             plyr.controls.querySelectorAll('[aria-haspopup="true"]').forEach(_toggleMenu);
 
