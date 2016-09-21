@@ -852,8 +852,8 @@
             // Toggle mute button
             if (_inArray(config.controls, 'mute')) {
                 html.push(
-                    '<div class="plyr__menu">',
-                        '<button type="button" id="plyr-volume-toggle-{id}" data-plyr="mute" aria-haspopup="true" aria-controls="plyr-volume-{id}" aria-expanded="false">',
+                    '<div class="plyr__menu" id="plyr-volume-toggle-{id}" aria-expanded="false" aria-haspopup="true" aria-controls="plyr-volume-{id}">',
+                        '<button type="button" data-plyr="mute">',
                             '<svg class="icon--muted"><use xlink:href="' + iconPath + '-muted" /></svg>',
                             '<svg><use xlink:href="' + iconPath + '-volume" /></svg>',
                         '</button>',
@@ -871,8 +871,8 @@
             // Toggle captions button
             if (_inArray(config.controls, 'captions')) {
                 html.push(
-                    '<div class="plyr__menu">',
-                        '<button type="button" id="plyr-captions-toggle-{id}" data-plyr="captions" aria-haspopup="true" aria-controls="plyr-captions-{id}" aria-expanded="false">',
+                    '<div class="plyr__menu" id="plyr-captions-toggle-{id}" aria-haspopup="true" aria-controls="plyr-captions-{id}" aria-expanded="false">',
+                        '<button type="button" data-plyr="captions">',
                             '<svg class="icon--captions-on"><use xlink:href="' + iconPath + '-captions-on" /></svg>',
                             '<svg><use xlink:href="' + iconPath+ '-captions-off" /></svg>',
                         '</button>',
@@ -907,8 +907,8 @@
             // Speed button
             if (_inArray(config.controls, 'speed')) {
                 html.push(
-                    '<div class="plyr__menu">',
-                        '<button type="button" id="plyr-speeds-toggle-{id}" data-plyr="speeds" aria-haspopup="true" aria-controls="plyr-speeds-{id}" aria-expanded="false">',
+                    '<div class="plyr__menu" id="plyr-speeds-toggle-{id}" aria-haspopup="true" aria-controls="plyr-speeds-{id}" aria-expanded="false">',
+                        '<button type="button" data-plyr="speeds">',
                             '<span data-plyr="speed">{speed}x</span>',
                         '</button>',
                         '<div class="plyr__menu__container" id="plyr-speeds-{id}" aria-hidden="true" aria-labelled-by="plyr-speeds-toggle-{id}">',
@@ -936,8 +936,8 @@
             // Quality button
             if (_inArray(config.controls, 'quality')) {
                 html.push(
-                    '<div class="plyr__menu">',
-                        '<button type="button" id="plyr-qualities-toggle-{id}" data-plyr="qualities" aria-haspopup="true" aria-controls="plyr-qualities-{id}" aria-expanded="false">',
+                    '<div class="plyr__menu" id="plyr-qualities-toggle-{id}" aria-haspopup="true" aria-controls="plyr-qualities-{id}" aria-expanded="false">',
+                        '<button type="button" data-plyr="qualities">',
                             '<span data-plyr="quality">{quality}</span>',
                         '</button>',
                         '<div class="plyr__menu__container" id="plyr-qualities-{id}" aria-hidden="true" aria-labelled-by="plyr-qualities-toggle-{id}">',
@@ -2623,6 +2623,30 @@
             _updateStorage({captionsEnabled: plyr.captionsEnabled});
         }
 
+        // Toggle menu
+        function _toggleMenu(menu) {
+            var target = document.querySelector('#' + menu.getAttribute('aria-controls')),
+                showMenu = function(show) {
+                    menu.setAttribute('aria-expanded', show);
+                    target.setAttribute('aria-hidden', !show);
+                };
+
+            _on(menu, 'mouseenter', function(event) {
+                showMenu(true);
+            });
+
+            _on(menu, 'mouseleave', function(event) {
+                var isNotMoveUp = (event.movementY >= 0);
+                if (isNotMoveUp) {
+                    showMenu(false);
+                }
+            });
+
+            _on(target, 'mouseleave', function(event) {
+                showMenu(false);
+            });
+        }
+
         // Check if media is loading
         function _checkLoading(event) {
             var loading = (event.type === 'waiting');
@@ -3341,15 +3365,8 @@
             // Captions
             _on(plyr.buttons.captions, 'click', _toggleCaptions);
 
-            // Menus
-            _on(plyr.controls.querySelectorAll('[aria-haspopup="true"]'), 'click', function() {
-                var toggle = this,
-                    target = document.querySelector('#' + toggle.getAttribute('aria-controls')),
-                    show = (toggle.getAttribute('aria-expanded') === 'false');
-
-                toggle.setAttribute('aria-expanded', show);
-                target.setAttribute('aria-hidden', !show);
-            });
+            // Menu
+            plyr.controls.querySelectorAll('[aria-haspopup="true"]').forEach(_toggleMenu);
 
             // Track menu button
             _on(plyr.controls.querySelectorAll('[data-plyr="option-track"]'), 'click', function(event) {
