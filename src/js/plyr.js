@@ -3376,9 +3376,6 @@
                 _setVolume(plyr.volume.input.value);
             });
 
-            // Mute
-            _proxyListener(plyr.buttons.mute, 'click', config.listeners.mute, _toggleMute);
-
             // Fullscreen
             _proxyListener(plyr.buttons.fullscreen, 'click', config.listeners.fullscreen, _toggleFullscreen);
 
