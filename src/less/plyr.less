@@ -716,6 +716,14 @@
 }
 .plyr .plyr__progress {
     display: inline-block;
+    margin-bottom: 20px;
+
+    &:hover {
+        .plyr__progress--played,
+        .plyr__progress--buffer {
+            height: @plyr-range-track-height-hover;
+        }
+    }
 }
 
 .plyr__progress--buffer,
@@ -732,6 +740,7 @@
     appearance: none;
     border: none;
     border-radius: 100px;
+    transition: height .2s ease;
 
     &::-webkit-progress-bar {
         background: transparent;
@@ -755,7 +764,7 @@
     z-index: 1;
     color: @plyr-range-selected-bg;
     background: transparent;
-    transition: none;
+    transition: opacity initial initial initial;
 
     &::-webkit-progress-value {
         min-width: @plyr-range-track-height;

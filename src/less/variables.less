@@ -58,15 +58,16 @@
 @plyr-audio-progress-buffered-bg:       @plyr-audio-progress-bg;
 
 // Range sliders
-@plyr-range-track-height:               8px;
-@plyr-range-thumb-height:               floor(@plyr-range-track-height * 2);
-@plyr-range-thumb-width:                floor(@plyr-range-track-height * 2);
+@plyr-range-track-height:               5px;
+@plyr-range-track-height-hover:         8px;
+@plyr-range-thumb-height:               15px;
+@plyr-range-thumb-width:                15px;
 @plyr-range-thumb-bg:                   #fff;
 @plyr-range-thumb-border:               2px solid transparent;
 @plyr-range-thumb-shadow:               0 1px 1px fade(@plyr-video-controls-bg, 15%), 0 0 0 1px fade(#343f4a, 20%);
 @plyr-range-thumb-active-border-color:  #fff;
 @plyr-range-thumb-active-bg:            @plyr-video-control-bg-hover;
-@plyr-range-thumb-active-scale:         1.25;
+@plyr-range-thumb-active-scale:         (@plyr-range-track-height-hover / @plyr-range-track-height);
 @plyr-video-range-track-bg:             @plyr-video-progress-buffered-bg;
 @plyr-audio-range-track-bg:             @plyr-audio-progress-buffered-bg;
 @plyr-range-selected-bg:                @plyr-color-main;
