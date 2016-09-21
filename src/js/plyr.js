@@ -856,7 +856,6 @@
                         '<button type="button" id="plyr-volume-toggle-{id}" data-plyr="mute" aria-haspopup="true" aria-controls="plyr-volume-{id}" aria-expanded="false">',
                             '<svg class="icon--muted"><use xlink:href="' + iconPath + '-muted" /></svg>',
                             '<svg><use xlink:href="' + iconPath + '-volume" /></svg>',
-                            '<span class="plyr__sr-only">' + config.i18n.volume + '</span>',
                         '</button>',
                         '<div class="plyr__menu__container" id="plyr-volume-{id}" aria-hidden="true" aria-labelled-by="plyr-volume-toggle-{id}">',
                             '<span class="plyr__volume">',
@@ -876,7 +875,6 @@
                         '<button type="button" id="plyr-captions-toggle-{id}" data-plyr="captions" aria-haspopup="true" aria-controls="plyr-captions-{id}" aria-expanded="false">',
                             '<svg class="icon--captions-on"><use xlink:href="' + iconPath + '-captions-on" /></svg>',
                             '<svg><use xlink:href="' + iconPath+ '-captions-off" /></svg>',
-                            '<span class="plyr__sr-only">' + config.i18n.toggleCaptions + '</span>',
                         '</button>',
                         '<div class="plyr__menu__container" id="plyr-captions-{id}" aria-hidden="true" aria-labelled-by="plyr-captions-toggle-{id}">',
                             '<ul>'
@@ -911,7 +909,6 @@
                 html.push(
                     '<div class="plyr__menu">',
                         '<button type="button" id="plyr-speeds-toggle-{id}" data-plyr="speeds" aria-haspopup="true" aria-controls="plyr-speeds-{id}" aria-expanded="false">',
-                            '<span class="plyr__sr-only">' + config.i18n.speed + '</span>',
                             '<span data-plyr="speed">{speed}x</span>',
                         '</button>',
                         '<div class="plyr__menu__container" id="plyr-speeds-{id}" aria-hidden="true" aria-labelled-by="plyr-speeds-toggle-{id}">',
@@ -941,7 +938,6 @@
                 html.push(
                     '<div class="plyr__menu">',
                         '<button type="button" id="plyr-qualities-toggle-{id}" data-plyr="qualities" aria-haspopup="true" aria-controls="plyr-qualities-{id}" aria-expanded="false">',
-                            '<span class="plyr__sr-only">' + config.i18n.quality + '</span>',
                             '<span data-plyr="quality">{quality}</span>',
                         '</button>',
                         '<div class="plyr__menu__container" id="plyr-qualities-{id}" aria-hidden="true" aria-labelled-by="plyr-qualities-toggle-{id}">',
