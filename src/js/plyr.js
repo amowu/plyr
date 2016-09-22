@@ -923,7 +923,7 @@
             if (_inArray(config.controls, 'speed')) {
                 html.push(
                     '<div class="plyr__menu" id="plyr-speeds-toggle-{id}" aria-haspopup="true" aria-controls="plyr-speeds-{id}" aria-expanded="false">',
-                        '<button type="button" data-plyr="speeds">',
+                        '<button class="plyr__border-button" type="button" data-plyr="speeds">',
                             '<span data-plyr="speed">{speed}x</span>',
                         '</button>',
                         '<div class="plyr__menu__container" id="plyr-speeds-{id}" aria-hidden="true" aria-labelled-by="plyr-speeds-toggle-{id}">',
@@ -953,7 +953,7 @@
             if (_inArray(config.controls, 'quality')) {
                 html.push(
                     '<div class="plyr__menu" id="plyr-qualities-toggle-{id}" aria-haspopup="true" aria-controls="plyr-qualities-{id}" aria-expanded="false">',
-                        '<button type="button" data-plyr="qualities">',
+                        '<button class="plyr__border-button" type="button" data-plyr="qualities">',
                             '<span data-plyr="quality">{quality}</span>',
                         '</button>',
                         '<div class="plyr__menu__container" id="plyr-qualities-{id}" aria-hidden="true" aria-labelled-by="plyr-qualities-toggle-{id}">',
