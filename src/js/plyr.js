@@ -3121,6 +3121,9 @@
                 // Set up from scratch
                 _setupMedia();
 
+                // Set playback quality
+                _setupQuality();
+
                 // HTML5 stuff
                 if (_inArray(config.types.html5, plyr.type)) {
                     // Setup captions
@@ -3787,12 +3790,12 @@
 
         // Setup the UI
         function _setupInterface() {
+            // Remove controls
+            _remove(_getElement(config.selectors.controls.wrapper));
+
             // Don't setup interface if no support
             if (!plyr.supported.full) {
                 _warn('Basic support only', plyr.type);
-
-                // Remove controls
-                _remove(_getElement(config.selectors.controls.wrapper));
 
                 // Remove large play
                 _remove(_getElement(config.selectors.buttons.play));
