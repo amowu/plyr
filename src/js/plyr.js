@@ -2291,8 +2291,9 @@
                 }),
                 sources: sources.map(function(source) {
                     return {
+                        type: source.type,
                         src: source.src,
-                        type: source.type
+                        label: source.getAttribute('label')
                     };
                 })
             });
