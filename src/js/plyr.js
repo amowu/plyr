@@ -2950,6 +2950,10 @@
                 sources = Array.prototype.slice.call(_getElements('source')),
                 tracks = Array.prototype.slice.call(_getElements('track'));
 
+            if (_inArray(config.controls, 'quality') === false) {
+                return;
+            }
+
             // Pause current playback
             if (isPlaying) {
                 _pause();
@@ -4074,7 +4078,6 @@
             plyr.init = true;
 
             // Switch video quality
-
             var quality = _findInQuality(plyr.storage.quality);
             if (quality) {
                 _setQuality(quality);
