@@ -1025,55 +1025,56 @@
                                                 '<ul>'
                 );
 
-            // Captions menu button
-            if (_inArray(config.controls, 'captions')) {
-                html.push(
+                // Captions menu button
+                if (_inArray(config.controls, 'captions')) {
+                    html.push(
                                                     '<li role="tab">',
                                                         '<button type="button" class="plyr__menu__btn plyr__menu__btn--forward" id="plyr-settings-{id}-captions-toggle" aria-haspopup="true" aria-controls="plyr-settings-{id}-captions" aria-expanded="false">', config.i18n.captions + ' <span class="plyr__menu__btn__value">{lang}</span>',
                                                         '</button>',
                                                     '</li>'
-                );
-            }
+                    );
+                }
 
-            // Speeds menu button
-            if (_inArray(config.controls, 'speed')) {
-                html.push(
+                // Speeds menu button
+                if (_inArray(config.controls, 'speeds')) {
+                    html.push(
                                                     '<li role="tab">',
                                                         '<button type="button" class="plyr__menu__btn plyr__menu__btn--forward" id="plyr-settings-{id}-speeds-toggle" aria-haspopup="true" aria-controls="plyr-settings-{id}-speeds" aria-expanded="false">', config.i18n.speeds + ' <span class="plyr__menu__btn__value">{speed}</span>',
                                                         '</button>',
                                                     '</li>'
-                );
-            }
+                    );
+                }
 
-            // Qualities menu button
-            if (_inArray(config.controls, 'quality')) {
-                html.push(
+                // Quality menu button
+                if (_inArray(config.controls, 'quality')) {
+                    html.push(
                                                     '<li role="tab">',
                                                         '<button type="button" class="plyr__menu__btn plyr__menu__btn--forward" id="plyr-settings-{id}-quality-toggle" aria-haspopup="true" aria-controls="plyr-settings-{id}-quality" aria-expanded="false">', config.i18n.quality + ' <span class="plyr__menu__btn__value"></span>',
                                                         '</button>',
                                                     '</li>'
-                );
-            }
+                    );
+                }
 
-            html.push(
+                html.push(
                                                 '</ul>',
                                             '</div>' // End of .plyr__menu__primary
-            );
+                );
 
-            // Captions menu item
-            html.push(
+                // Captions menu item
+                html.push(
                                             '<div class="plyr__menu__secondary" id="plyr-settings-{id}-captions" aria-hidden="true" aria-labelled-by="plyr-settings-{id}-captions-toggle" role="tabpanel" tabindex="-1">',
                                                 '<ul>',
                                                     '<li role="tab">',
-                                                        '<button type="button" class="plyr__menu__btn plyr__menu__btn--back" aria-haspopup="true" aria-controls="plyr-settings-{id}-primary" aria-expanded="false">', config.i18n.captions,
+                                                        '<button type="button" class="plyr__menu__btn plyr__menu__btn--back" aria-haspopup="true" aria-controls="plyr-settings-{id}-primary" aria-expanded="false">',
+                                                            config.i18n.captions,
                                                         '</button>',
                                                     '</li>',
                                                 '</ul>',
                                             '</div>' // End of .plyr__menu__secondary
-            );
+                );
 
-            // Speeds menu item
-            html.push(
+                // Speeds menu item
+                html.push(
                                             '<div class="plyr__menu__secondary" id="plyr-settings-{id}-speeds" aria-hidden="true" aria-labelled-by="plyr-settings-{id}-speeds-toggle" role="tabpanel" tabindex="-1">',
                                                 '<ul>',
                                                     '<li role="tab">',
@@ -1083,10 +1084,10 @@
                                                     '</li>',
                                                 '</ul>',
                                             '</div>' // End of .plyr__menu__secondary
-            );
+                );
 
-            // Qualities menu item
-            html.push(
+                // Quality menu item
+                html.push(
                                             '<div class="plyr__menu__secondary" id="plyr-settings-{id}-quality" aria-hidden="true" aria-labelled-by="plyr-settings-{id}-quality-toggle" role="tabpanel" tabindex="-1">',
                                                 '<ul>',
                                                     '<li role="tab">',
@@ -1094,9 +1095,9 @@
                                                             config.i18n.quality,
                                                         '</button>',
                                                     '</li>'
-            );
+                );
 
-            html.push(
+                html.push(
                                                 '</ul>',
                                             '</div>', // End of .plyr__menu__secondary
                                         '</div>',
@@ -2305,7 +2306,7 @@
             _seek(plyr.media.currentTime + seekTime);
         }
 
-        // Speed-up
+        // Speed
         function _speed(speed) {
             if (!_inArray(config.controls, 'speeds')) {
                 return;
@@ -3944,7 +3945,7 @@
                         container.style.height = '';
                     }, 300);
                 }
-            });
+            }
 
             // Seek tooltip
             _on(plyr.progress.container, 'mouseenter mouseleave mousemove', _updateSeekTooltip);
