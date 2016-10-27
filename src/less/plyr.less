@@ -530,7 +530,14 @@
             display: none;
         }
     }
-    
+    // Menu button that not contain <svg>, ex: speed, quality
+    button.plyr__menu__btn__value {
+        padding: 2px 10px;
+        border-radius: 2px;
+        border: solid 1px #fff;
+        font-size: @plyr-font-size-small;
+    }
+
     // The actual menu container
     &__container {
         position: absolute;
@@ -594,6 +601,7 @@
             }
             button {
                 padding-left: ceil(@plyr-control-padding * 2.5);
+                text-align: left;
             }
             button.plyr__menu__btn--active::before {
                 content: "";

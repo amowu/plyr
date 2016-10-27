@@ -84,6 +84,8 @@
                 forward:        '[data-plyr="fast-forward"]',
                 mute:           '[data-plyr="mute"]',
                 captions:       '[data-plyr="captions"]',
+                speeds:         '[data-plyr="speeds"]',
+                quality:        '[data-plyr="quality"]',
                 settings:       '[data-plyr="settings"]',
                 zoom:           '[data-plyr="zoom"]',
                 fullscreen:     '[data-plyr="fullscreen"]'
@@ -170,7 +172,7 @@
             frameTitle:         'Player for {title}',
             captions:           'Captions',
             settings:           'Settings',
-            speed:              'Speed',
+            speeds:             'Speeds',
             quality:            'Quality',
             disableCaptions:    'Off'
         },
@@ -201,7 +203,8 @@
             mute:               null,
             volume:             null,
             captions:           null,
-            speed:              null,
+            speeds:             null,
+            quality:            null,
             zoom:               null,
             fullscreen:         null
         },
@@ -589,6 +592,9 @@
         },
         empty: function(input) {
             return input === null || this.undefined(input) || ((this.string(input) || this.array(input) || this.nodeList(input)) && input.length === 0) || (this.object(input) && Object.keys(input).length === 0);
+        },
+        mobile: function() {
+            return (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
         }
     };
 
@@ -927,19 +933,85 @@
                 );
             }
 
-            // Toggle captions button
-            if (_inArray(config.controls, 'captions')) {
+            // Captions button / menu
+            if (_inArray(config.controls, 'captions') && !_is.mobile()) {
                 html.push(
-                                '<button type="button" data-plyr="captions">',
-                                    '<svg class="icon--captions-on"><use xlink:href="' + iconPath + '-captions-on" /></svg>',
-                                    '<svg><use xlink:href="' + iconPath+ '-captions-off" /></svg>',
-                                    '<span class="plyr__sr-only">' + config.i18n.toggleCaptions + '</span>',
-                                '</button>'
+                                '<div id="plyr-settings-{id}-captions-toggle" class="plyr__menu" data-plyr="captions">',
+                                    '<button type="button" id="plyr-captions-toggle-{id}">',
+                                        '<svg class="icon--captions-on"><use xlink:href="' + iconPath + '-captions-on" /></svg>',
+                                        '<svg><use xlink:href="' + iconPath+ '-captions-off" /></svg>',
+                                        '<span class="plyr__menu__btn__value plyr__sr-only">' + config.i18n.toggleCaptions + '</span>',
+                                    '</button>',
+
+                                    '<div class="plyr__menu__container" id="plyr-settings-{id}" aria-hidden="true" aria-labelled-by="plyr-captions-toggle-{id}" role="tablist" tabindex="-1">',
+                                        '<div>',
+                                            '<div class="plyr__menu__secondary" id="plyr-settings-{id}-captions" role="tabpanel" tabindex="-1">',
+                                                '<ul>',
+                                                    '<li role="tab">',
+                                                        '<button type="button">',
+                                                            config.i18n.captions,
+                                                        '</button>',
+                                                    '</li>',
+                                                '</ul>',
+                                            '</div>',
+                                        '</div>',
+                                    '</div>',
+                                '</div>'
+                );
+            }
+
+            // Speeds button / menu
+            if (_inArray(config.controls, 'speeds') && !_is.mobile()) {
+                html.push(
+                                '<div id="plyr-settings-{id}-speeds-toggle" class="plyr__menu" data-plyr="speeds">',
+                                    '<button type="button" id="plyr-speeds-toggle-{id}" class="plyr__menu__btn__value">',
+                                        '{speed}',
+                                    '</button>',
+
+                                    '<div class="plyr__menu__container" id="plyr-settings-{id}" aria-hidden="true" aria-labelled-by="plyr-speeds-toggle-{id}" role="tablist" tabindex="-1">',
+                                        '<div>',
+                                            '<div class="plyr__menu__secondary" id="plyr-settings-{id}-speeds" role="tabpanel" tabindex="-1">',
+                                                '<ul>',
+                                                    '<li role="tab">',
+                                                        '<button type="button">',
+                                                            config.i18n.speeds,
+                                                        '</button>',
+                                                    '</li>',
+                                                '</ul>',
+                                            '</div>',
+                                        '</div>',
+                                    '</div>',
+                                '</div>'
+                );
+            }
+
+            // Quality button / menu
+            if (_inArray(config.controls, 'quality') && !_is.mobile()) {
+                html.push(
+                                '<div id="plyr-settings-{id}-quality-toggle" class="plyr__menu" data-plyr="quality">',
+                                    '<button type="button" id="plyr-quality-toggle-{id}" class="plyr__menu__btn__value">',
+                                        '{quality}',
+                                    '</button>',
+
+                                    '<div class="plyr__menu__container" id="plyr-settings-{id}" aria-hidden="true" aria-labelled-by="plyr-quality-toggle-{id}" role="tablist" tabindex="-1">',
+                                        '<div>',
+                                            '<div class="plyr__menu__secondary" id="plyr-settings-{id}-quality" role="tabpanel" tabindex="-1">',
+                                                '<ul>',
+                                                    '<li role="tab">',
+                                                        '<button type="button">',
+                                                            config.i18n.quality,
+                                                        '</button>',
+                                                    '</li>',
+                                                '</ul>',
+                                            '</div>',
+                                        '</div>',
+                                    '</div>',
+                                '</div>'
                 );
             }
 
             // Settings button / menu
-            if (_inArray(config.controls, 'settings')) {
+            if (_inArray(config.controls, 'settings') && _is.mobile()) {
                 html.push(
                                 '<div class="plyr__menu" data-plyr="settings">',
                                     '<button type="button" id="plyr-settings-toggle-{id}" aria-haspopup="true" aria-controls="plyr-settings-{id}" aria-expanded="false">',
@@ -967,7 +1039,7 @@
             if (_inArray(config.controls, 'speed')) {
                 html.push(
                                                     '<li role="tab">',
-                                                        '<button type="button" class="plyr__menu__btn plyr__menu__btn--forward" id="plyr-settings-{id}-speed-toggle" aria-haspopup="true" aria-controls="plyr-settings-{id}-speed" aria-expanded="false">', config.i18n.speed + ' <span class="plyr__menu__btn__value">{speed}</span>',
+                                                        '<button type="button" class="plyr__menu__btn plyr__menu__btn--forward" id="plyr-settings-{id}-speeds-toggle" aria-haspopup="true" aria-controls="plyr-settings-{id}-speeds" aria-expanded="false">', config.i18n.speeds + ' <span class="plyr__menu__btn__value">{speed}</span>',
                                                         '</button>',
                                                     '</li>'
                 );
@@ -1002,29 +1074,13 @@
 
             // Speeds menu item
             html.push(
-                                            '<div class="plyr__menu__secondary" id="plyr-settings-{id}-speed" aria-hidden="true" aria-labelled-by="plyr-settings-{id}-speed-toggle" role="tabpanel" tabindex="-1">',
+                                            '<div class="plyr__menu__secondary" id="plyr-settings-{id}-speeds" aria-hidden="true" aria-labelled-by="plyr-settings-{id}-speeds-toggle" role="tabpanel" tabindex="-1">',
                                                 '<ul>',
                                                     '<li role="tab">',
                                                         '<button type="button" class="plyr__menu__btn plyr__menu__btn--back" aria-haspopup="true" aria-controls="plyr-settings-{id}-primary" aria-expanded="false">',
-                                                            config.i18n.speed,
+                                                            config.i18n.speeds,
                                                         '</button>',
-                                                    '</li>'
-            );
-
-            // Inject speeds menu item
-            config.speeds.forEach(function(speed) {
-                html.push(
-                                                    '<li>',
-                                                        '<button type="button" class="',
-                                                            ((plyr.storage.speed === speed || (plyr.storage.speed === undefined && speed === config.defaultSpeed)) ? 'plyr__menu__btn--active' : ''),
-                                                            '" data-plyr="speed" data-plyr-speed="' + speed + '">' + speed + '&times;',
-                                                        '</button>',
-                                                    '</li>'
-                );
-            });
-
-            // Close menu button
-            html.push(
+                                                    '</li>',
                                                 '</ul>',
                                             '</div>' // End of .plyr__menu__secondary
             );
@@ -1555,18 +1611,20 @@
                 }
             }
 
-            // Binding speed value for menu
-            if (_inArray(config.controls, 'speed')) {
-                var speedMenuButton = getMenuButton('speed');
-                plyr.currentSpeed = new DataBind(speedMenuButton, 'textContent', config.defaultSpeed, '{value}×');
-            }
-
             // Binding captions value for menu
             if (_inArray(config.controls, 'captions')) {
                 var captionMenuButton = getMenuButton('captions');
                 plyr.currentCaptionLabel = new DataBind(captionMenuButton, 'textContent', config.i18n.disableCaptions);
                 // Inject caption menu item
                 _buildCaptionControl();
+            }
+
+            // Binding speed value for menu
+            if (_inArray(config.controls, 'speeds')) {
+                var speedMenuButton = getMenuButton('speeds');
+                plyr.currentSpeed = new DataBind(speedMenuButton, 'textContent', config.defaultSpeed, '{value}×');
+                // Inject speed menu item
+                _buildSpeedControl();
             }
 
             // Binding quality value for menu
@@ -1606,6 +1664,8 @@
                 // Inputs
                 plyr.buttons.mute             = _getElement(config.selectors.buttons.mute);
                 plyr.buttons.captions         = _getElement(config.selectors.buttons.captions);
+                plyr.buttons.speeds           = _getElement(config.selectors.buttons.speeds);
+                plyr.buttons.quality          = _getElement(config.selectors.buttons.quality);
 
                 // Progress
                 plyr.progress = {};
@@ -2247,7 +2307,7 @@
 
         // Speed-up
         function _speed(speed) {
-            if (!_inArray(config.controls, 'speed')) {
+            if (!_inArray(config.controls, 'speeds')) {
                 return;
             }
             if (!_is.array(config.speeds)) {
@@ -3144,7 +3204,7 @@
                     '<li>',
                         '<button type="button" class="',
                             (hasCaption ? 'plyr__menu__btn--active' : ''),
-                            '" data-plyr="caption" data-plyr-caption="' + j + '">' + tracks[j].label,
+                            '" data-plyr="captions" data-plyr-captions="' + j + '">' + tracks[j].label,
                         '</button>',
                     '</li>'
                 );
@@ -3159,11 +3219,45 @@
                         '<button type="button" class="',
                             ((plyr.storage.captionsEnabled === false) ?
                                 'plyr__menu__btn--active' : ''),
-                            '" data-plyr="caption" data-plyr-caption="false">',
+                            '" data-plyr="captions" data-plyr-captions="false">',
                                 config.i18n.disableCaptions,
                         '</button>',
                     '</li>'
             );
+
+            // To string
+            html = html.join('');
+
+            // Inser HTML
+            ul.insertAdjacentHTML('beforeend', html);
+        }
+
+        // Build speed menu items
+        function _buildSpeedControl() {
+            var i,
+                buttons = _getElements('li > button[data-plyr=speeds]');
+
+            // Remove exist captions menu items
+            for (i=0; i<buttons.length; i++) {
+                buttons[i].parentNode.remove();
+            }
+
+            // Build HTML
+            var query = '#plyr-settings-' + plyr.controlsId + '-speeds > ul',
+                ul = _getElement(query),
+                html = [];
+
+            // Inject speeds menu item
+            config.speeds.forEach(function(speed) {
+                html.push(
+                    '<li>',
+                        '<button type="button" class="',
+                            ((plyr.storage.speed === speed || (plyr.storage.speed === undefined && speed === config.defaultSpeed)) ? 'plyr__menu__btn--active' : ''),
+                            '" data-plyr="speeds" data-plyr-speeds="' + speed + '">' + speed + '&times;',
+                        '</button>',
+                    '</li>'
+                );
+            });
 
             // To string
             html = html.join('');
@@ -3315,6 +3409,7 @@
             if (!_is.undefined(source)) {
                 _updateSource(source);
                 _buildCaptionControl();
+                _buildSpeedControl();
                 _buildQualityControl();
                 return;
             }
@@ -3710,9 +3805,6 @@
             // Fast forward
             _proxyListener(plyr.buttons.forward, 'click', config.listeners.forward, _forward);
 
-            // Speed-up
-            _proxyListener(plyr.buttons.speed, 'click', config.listeners.speed, _speed);
-
             // Seek
             _proxyListener(plyr.buttons.seek, inputEvent, config.listeners.seek, _seek);
 
@@ -3735,11 +3827,37 @@
                 _on(document, _fullscreen.eventType, _toggleFullscreen);
             }
 
-            // Captions
-            _on(plyr.buttons.captions, 'click', _toggleCaptions);
+            if (_is.mobile()) {
+                // In mobile, handle settings menu button
+                _on(plyr.buttons.settings, 'click', onMenuItemClick);
+            } else {
+                // In desktop, handle caption, speed and quality menu button
+                var hiddenTimeoutHandler,
+                    HIDDEN_AFTER = 500; // 500 ms
+                ['captions', 'speeds', 'quality'].forEach(function(setting) {
+                    var menu = _getElement(['.plyr__menu[data-plyr=', setting, '] .plyr__menu__container'].join(''));
+                    var button = plyr.buttons[setting];
+                    // Handle menu hover
+                    _on(button, 'mouseenter', function(event) {
+                        menu.setAttribute('aria-hidden', false);
+                    });
+                    _on(button, 'mouseleave', function(event) {
+                        hiddenTimeoutHandler = setTimeout(function() {
+                            menu.setAttribute('aria-hidden', true);
+                        }, HIDDEN_AFTER);
+                    });
+                    _on(menu, 'mouseenter', function(event) {
+                        clearTimeout(hiddenTimeoutHandler);
+                    });
+                    _on(menu, 'mouseleave', function(event) {
+                        menu.setAttribute('aria-hidden', true);
+                    });
+                    // Handle menu item click
+                    _on(button, 'click', onMenuItemClick);
+                });
+            }
 
-            // Settings
-            _on(plyr.buttons.settings, 'click', function(event) {
+            function onMenuItemClick(event) {
                 var menu = this,
                     toggle = event.target,
                     target = document.getElementById(toggle.getAttribute('aria-controls')),
@@ -3748,8 +3866,8 @@
                 // Handle menu item
                 if (!_is.htmlElement(target)) {
                     var settingsObj = {
-                        'data-plyr-caption': _toggleCaptionIndex,
-                        'data-plyr-speed': _speed,
+                        'data-plyr-captions': _toggleCaptionIndex,
+                        'data-plyr-speeds': _speed,
                         'data-plyr-quality': _setQuality
                     };
                     var setting = toggle.getAttribute('data-plyr');
