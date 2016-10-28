@@ -1602,7 +1602,7 @@
 
             // Setup tooltips
             if (config.tooltips.controls) {
-                var labels = _getElements([config.selectors.controls.wrapper, ' ', config.selectors.labels, ' .', config.classes.hidden].join(''));
+                var labels = _getElements([config.selectors.controls.wrapper, ' ', config.selectors.labels, ' [class="', config.classes.hidden, '"]'].join(''));
 
                 for (var i = labels.length - 1; i >= 0; i--) {
                     var label = labels[i];
